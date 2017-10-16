@@ -1,0 +1,5 @@
+1. Load a file and copy it in another file:
+python c:/Users/cgafa/Desktop/ML/study.py/october/challenge.py  --file "october\test.csv" --output-file "october\test2.csv"
+
+2. Load a file, select a line number and copy it in a file:
+python c:/Users/cgafa/Desktop/ML/study.py/october/challenge.py  --file "october\test.csv" --getline 1 --output-file "october\test2.csv"
