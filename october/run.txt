@@ -3,3 +3,6 @@ python c:/Users/cgafa/Desktop/ML/study.py/october/challenge.py  --file "october\
 
 2. Load a file, select a line number and copy it in a file:
 python c:/Users/cgafa/Desktop/ML/study.py/october/challenge.py  --file "october\test.csv" --getline 1 --output-file "october\test2.csv"
+
+3. Merge files and output in a single one
+python c:/Users/cgafa/Desktop/ML/study.py/october/challenge.py  --merge-files "october\test.csv" "october\test2.csv" --output-file "october\test3.csv"
