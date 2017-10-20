@@ -89,11 +89,16 @@ class csv_file_manipulator():
     def process_http_get_file(self):
         url_argument = self.__get_next_argument()
 
-        data = urllib3.request.ur urlopen(url_argument)
+        from urllib3 import PoolManager
+        manager = PoolManager(num_pools=2)
+        r = manager.request('GET', 'www.google.com')
+        for chunk in r.stream(8):
+            print(chunk)
+        #data = urllib3.request.ur urlopen(url_argument)
 
-        urllib3.connection.ur
-        for line in data: # files are iterable
-            print(line)
+        #urllib3.connection.ur
+        #for line in data: # files are iterable
+         #   print(line)
         self.current_argument_idx += 1
 
     def process_unknown_argument(self):
