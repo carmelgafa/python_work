@@ -92,7 +92,7 @@ class csv_file_manipulator():
         from urllib3 import PoolManager
         manager = PoolManager(num_pools=2)
         r = manager.request('GET', 'www.google.com')
-        for chunk in r.stream(8):
+        for chunk in r.a
             print(chunk)
         #data = urllib3.request.ur urlopen(url_argument)
 
