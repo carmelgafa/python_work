@@ -1,14 +1,13 @@
-import urllib3
+import csv
+import io
+import urllib.request
 
-http = urllib3.PoolManager()
+url = "https://raw.github.com/datasets/gdp/master/data/gdp.csv"
+url='https://people.sc.fsu.edu/~jburkardt/data/csv/snakes_count_1000.csv'
+webpage = urllib.request.urlopen(url)
+datareader = csv.reader(io.TextIOWrapper(webpage))
 
-r = http.request('GET', 'http://www.google.com', preload_content=False)
+data = list(datareader)
 
-
-r.
-
-for chunk in r.stream(32):
-    print(chunk)
-
-
-r.release_conn()
+print(data)
+    

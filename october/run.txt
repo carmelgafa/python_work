@@ -14,4 +14,4 @@ python c:/Users/cgafa/Desktop/ML/study.py/october/challenge.py  --file "october\
 python c:/Users/cgafa/Desktop/ML/study.py/october/challenge.py  --file "october\test.csv" --filter "four" --output-file "october\test5.csv"
 
 6. Load file from URL and copy result in file
-python c:/Users/cgafa/Desktop/ML/study.py/october/challenge.py  --http-get-file "www.google.com" --filter "four" --output-file "october\test5.csv"
+python c:/Users/cgafa/Desktop/ML/study.py/october/challenge.py  --http-get-file "https://raw.github.com/datasets/gdp/master/data/gdp.csv" --filter "four" --output-file "october\test6.csv"
