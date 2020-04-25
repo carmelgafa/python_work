@@ -2,6 +2,7 @@ import numpy as np
 import copy
 from collections import OrderedDict
 # import fuzzy_system.system_settings
+import matplotlib.pyplot as plt
 
 
 class FuzzySet:
@@ -19,7 +20,10 @@ class FuzzySet:
 
 	def __setitem__(self, x_val, dom):
 		self._dom[np.abs(self._domain-x_val).argmin()] = dom
-	
+		
+		if dom < 0:
+			self._empty = False
+
 	def __str__(self):
 		pass
 		# set_elements = []
@@ -45,9 +49,9 @@ class FuzzySet:
 		t1fs = cls(name, domain_min, domain_max, res)
 
 		t1fs._domain = np.linspace(domain_min, domain_max, res)
-		s = np.minimum(np.maximum(np.minimum((t1fs._domain-a)/(b-a), (d-t1fs._domain)/(d-c)), 0), 1)
+		t1fs._dom = np.minimum(np.maximum(np.minimum((t1fs._domain-a)/(b-a), (d-t1fs._domain)/(d-c)), 0), 1)
 		
-		return s
+		return t1fs
 
 	# _get_last_dom_value = property(_get_last_dom_value, _set_last_dom_value)
 
@@ -56,9 +60,9 @@ class FuzzySet:
 		t1fs = cls(name, domain_min, domain_max)
 
 		t1fs._domain = np.linspace(domain_min, domain_max, res)
-		s = s = np.maximum(np.minimum((t1fs._domain-a)/(b-a), (c-t1fs._domain)/(c-b)), 0)
+		t1fs._dom = np.maximum(np.minimum((t1fs._domain-a)/(b-a), (c-t1fs._domain)/(c-b)), 0)
 		
-		return s
+		return t1fs
 
 
 	# def _sort_set(self):
@@ -71,43 +75,13 @@ class FuzzySet:
 	# def _get_last_dom_value(self):
 	# 	return self._last_dom_value
 
-	# def _set_last_dom_value(self, d):
-	# 	if d < 0:
-	# 		self._last_dom_value = 0
-	# 	elif d > 1:
-	# 		self._last_dom_value = 1
-	# 	else:
-	# 		self._last_dom_value = d
 
-	# def add_element(self, domain_val, dom_val):
-	# 	'''
-	# 	Adds a new element to the t1fs. If there is already an element at the stated
-	# 	domain value the maximum degree of membership value is kept
 
-	# 	Arguments:
-	# 	----------
-	# 	domain_val -- float, the value of x
-	# 	degree_of_membership, float value between 0 and 1. The degree of membership
-	# 	'''
-	# 	if dom_val > 1:
-	# 		raise ValueError('degree of membership must not be greater than 1, {} : {}'.format(domain_val, dom_val))
-
-	# 	if domain_val in self._elements:
-	# 		self._elements[domain_val] = max(self._elements[domain_val], dom_val)
-	# 	else:
-	# 		self._elements[domain_val] = dom_val
-	# 		self._empty = False
-
-	# 	if dom_val == 1:
-	# 		self._center = min(self._center, domain_val)
-
-	# def clear_set(self):
-	# 	if not self._empty:
-	# 		self._elements = {}
-	# 		self._empty = True
-	# 		self._precision = 3
-	# 		self._name = name
-	# 		self._last_dom_value = 0
+	def clear_set(self):
+		if not self._empty:
+			self._dom.fill(0)
+			self._empty = True
+			self._last_dom_value = 0
 
 	# def fuzzy_alpha_cut(self, val):
 		
@@ -122,52 +96,39 @@ class FuzzySet:
 
 	# 	return res_set
 
-	# def union(self, f_set):
+	def union(self, f_set):
 
-	# 	result = copy.deepcopy(f_set)
+		result = copy.deepcopy(f_set)
+		result.clear_set()
 
-	# 	for x, u in self._elements.items():
-	# 		if x in result._elements:
-	# 			result[x] = max( result[x], u)
-	# 		else:
-	# 			result.add_element(x, u)
+		result._dom = np.maximum(self._dom, f_set._dom)
 
-	# 	result._sort_set()
-	# 	return result
+		return result
 
-	# def intersection(self, f_set):
+	def intersection(self, f_set):
 
-	# 	result = copy.deepcopy(f_set)
+		result = copy.deepcopy(f_set)
+		result.clear_set()
 
-	# 	for x, u in self._elements.items():
-	# 		if x in result._elements:
-	# 			result[x] = min( result[x], u)
-	# 		else:
-	# 			result.add_element(x, u)
+		result._dom = np.minimum(self._dom, f_set._dom)
 
-	# 	result._sort_set()
-	# 	return result
+		return result
 
-	# def complement(self):
+	def complement(self):
 
-	# 	result = copy.deepcopy(self)
+		result = copy.deepcopy(self)
+		result.clear_set()
 
-	# 	for x, u in self._elements.items():
-	# 		result[x] = 1 - u
+		result._dom = 1 - self._dom
 
-	# 	result._sort_set()
-	# 	return result
+		return result
 
-	# def cog_defuzzify(self):
+	def cog_defuzzify(self):
 		
-	# 	num = 0
-	# 	den = 0
+		num = np.sum(np.multiply(self._dom, self._domain))
+		den = np.sum(self._dom)
 
-	# 	for x, u in self._elements.items():
-	# 		num = round(num + x * u, fuzzy_system.system_settings.PRECISION)
-	# 		den = round(den + u , fuzzy_system.system_settings.PRECISION)
-
-		# return(num/den)
+		return num/den
 
 	def domain_elements(self):
 		return self._domain
@@ -175,12 +136,21 @@ class FuzzySet:
 	def dom_elements(self):
 		return self._dom
 
-	# def plot_set(self, ax, col=''):
-	# 	ax.plot(self.domain_elements(), self.dom_elements(), col)
-	# 	ax.set_ylim([-0.1,1.1])
-	# 	ax.set_title(self._name)
-	# 	ax.grid(True, which='both', alpha=0.4)
-	# 	ax.set(xlabel='x', ylabel='$\mu(x)$')
+	def plot_set(self, ax, col=''):
+		ax.plot(self._domain, self._dom, col)
+		ax.set_ylim([-0.1,1.1])
+		ax.set_title(self._name)
+		ax.grid(True, which='both', alpha=0.4)
+		ax.set(xlabel='x', ylabel='$\mu(x)$')
 
 
 s = FuzzySet.create_trapezoidal('test', 1, 100, 100, 20, 30, 50, 80)
+
+t = FuzzySet.create_trapezoidal('test', 1, 100, 100, 30, 50, 90, 100)
+
+fig, axs = plt.subplots(1, 1)
+
+s.complement().plot_set(axs)
+
+plt.show()
+print(s.cog_defuzzify())
