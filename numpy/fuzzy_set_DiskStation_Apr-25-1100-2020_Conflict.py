@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 from collections import OrderedDict
+# import fuzzy_system.system_settings
 import matplotlib.pyplot as plt
 
 
@@ -12,27 +13,24 @@ class FuzzySet:
 		self._res = res
 
 		self._domain = np.linspace(domain_min, domain_max, res)
-		self._dom = np.zeros(self._domain.shape)
+		self._dom = np.empty(self._domain.shape)
+		self._empty = True
 		self._precision = 3
 		self._name = name
+		self._last_dom_value = 0
+		self._center = float('inf')
 
 	def __getitem__(self, x_val):
 		return self._dom[np.abs(self._domain-x_val).argmin()]
 
 	def __setitem__(self, x_val, dom):
 		self._dom[np.abs(self._domain-x_val).argmin()] = round(dom, self._precision)
-	
+		
+		if dom < 0:
+			self._empty = False
 
 	def __str__(self):
 		return ' + '.join([str(a) + '/' + str(b) for a,b in zip(self._dom, self._domain)])
-
-	@property
-	def name(self):
-		return self._name
-
-	@property
-	def empty(self):
-		return np.all(self._dom == 0)
 
 	@property
 	def center_value(self):
@@ -51,6 +49,8 @@ class FuzzySet:
 		
 		return t1fs
 
+	# _get_last_dom_value = property(_get_last_dom_value, _set_last_dom_value)
+
 	@classmethod
 	def create_triangular(cls, name, domain_min, domain_max, res, a, b, c):
 		t1fs = cls(name, domain_min, domain_max)
@@ -60,33 +60,59 @@ class FuzzySet:
 		
 		return t1fs
 
+
+	# def _sort_set(self):
+	# 	'''
+	# 	sorts a type-1 fuzzy set so that all somain values (keys) are 
+	# 	in ascending order
+	# 	'''
+	# 	self._elements = OrderedDict( sorted(self._elements.items()))
+
+	# def _get_last_dom_value(self):
+	# 	return self._last_dom_value
+
+
+
 	def clear_set(self):
-		self._dom.fill(0)
+		if not self._empty:
+			self._dom.fill(0)
+			self._empty = True
+			self._last_dom_value = 0
 
-	def alpha_cut(self, val):
+	# def fuzzy_alpha_cut(self, val):
 		
-		result = FuzzySet(f'({self._name}) alpha ({val})', self._domain_min, self._domain_max, self._res)
-		result._dom = np.minimum(self._dom, val)
+	# 	res_set = FuzzySet()
 
-		return result
+	# 	for x, u in self._elements.items():
+			
+	# 		if u > val:
+	# 			res_set.add_element(x, val)
+	# 		else:
+	# 			res_set.add_element(x, u)
+
+	# 	return res_set
 
 	def union(self, f_set):
 
-		result = FuzzySet(f'({self._name}) union ({f_set._name})', self._domain_min, self._domain_max, self._res)
+		result = FuzzySet(d'')
 		result._dom = np.maximum(self._dom, f_set._dom)
 
 		return result
 
 	def intersection(self, f_set):
 
-		result = FuzzySet(f'({self._name}) intersection ({f_set._name})', self._domain_min, self._domain_max, self._res)
+		result = copy.deepcopy(f_set)
+		result.clear_set()
+
 		result._dom = np.minimum(self._dom, f_set._dom)
 
 		return result
 
 	def complement(self):
 
-		result = FuzzySet(f'not ({self._name})', self._domain_min, self._domain_max, self._res)
+		result = copy.deepcopy(self)
+		result.clear_set()
+
 		result._dom = 1 - self._dom
 
 		return result
@@ -112,22 +138,17 @@ class FuzzySet:
 		ax.set(xlabel='x', ylabel='$\mu(x)$')
 
 
-if __name__ == "__main__":
-	s = FuzzySet.create_trapezoidal('test', 1, 100, 100, 20, 30, 50, 80)
+s = FuzzySet.create_trapezoidal('test', 1, 100, 100, 20, 30, 50, 80)
 
-	print(s.empty)
+print(s)
 
-	u = FuzzySet('u', 1, 100, 100)
+# t = FuzzySet.create_trapezoidal('test', 1, 100, 100, 30, 50, 90, 100)
 
-	print(u.empty)
+# fig, axs = plt.subplots(1, 1)
 
-	t = FuzzySet.create_trapezoidal('test', 1, 100, 100, 30, 50, 90, 100)
-
-	fig, axs = plt.subplots(1, 1)
-
-	s.union(t).complement().intersection(s).alpha_cut(0.2).plot_set(axs)
+# s.complement().plot_set(axs)
 
 
 
-	plt.show()
-	print(s.cog_defuzzify())
+# plt.show()
+# print(s.cog_defuzzify())
