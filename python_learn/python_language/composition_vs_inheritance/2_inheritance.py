@@ -3,7 +3,6 @@ implements inheritance
 notice explosion of subclasses for every type
 '''
 
-
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 

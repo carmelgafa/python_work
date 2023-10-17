@@ -9,9 +9,17 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 
+class Commission(ABC):
+    '''a generic commision class'''
+    
+    @abstractmethod
+    def get_payment(self)->float:
+        '''computes commission'''
+
+
 
 @dataclass
-class Commission:
+class ContractCommission(Commission):
     '''commission'''
     commission: float = 100
     contracts_landed: float = 0
@@ -106,7 +114,7 @@ def main()->None:
     sarah_contract = SalariedContract(
         monthly_salary=5000,
     )
-    sarah_commission = Commission(
+    sarah_commission = ContractCommission(
         contracts_landed=10
         
     )    
