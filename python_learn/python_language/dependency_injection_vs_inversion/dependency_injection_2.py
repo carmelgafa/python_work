@@ -30,12 +30,12 @@ class Authorizer_SMS:
     
 class PaymentProcessor:
     
+    def __init__(self, auth):
+        self.authorizer = auth
+        
     def pay(self, order):
-        '''too many responsibilities'''
-        authorizer = Authorizer_SMS()
-        authorizer.generate_sms_code()
-        authorizer.authorize()
-        if not authorizer.is_authorized():
+        self.authorizer.authorize()
+        if not self.authorizer.is_authorized():
             raise Exception('Not Authorized')
         print(f'Processing payment for order with id: {order.id}')
         order.set_status('paid')
