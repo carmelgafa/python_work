@@ -10,9 +10,18 @@ class Order:
     
     def set_status(self, status):
         self.status = status
-        
 
-class Authorizer_SMS:
+class Authorizer(ABC):
+    
+    @abstractmethod
+    def authorize(self):
+        '''pass'''
+    
+    @abstractmethod
+    def is_authorized(self) -> bool:
+        pass
+
+class Authorizer_SMS(Authorizer):
     
     def __init__(self):
         self.authorized = False
@@ -30,7 +39,7 @@ class Authorizer_SMS:
     
 class PaymentProcessor:
     
-    def __init__(self, auth):
+    def __init__(self, auth:Authorizer):
         self.authorizer = auth
         
     def pay(self, order):

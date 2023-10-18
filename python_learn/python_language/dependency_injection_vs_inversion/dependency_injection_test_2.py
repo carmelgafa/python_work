@@ -13,7 +13,7 @@ class Order_TestCase(unittest.TestCase):
         order = Order()
         order.set_status("paid")
         self.assertEqual(order.status, "paid")
-        
+
 class Authorizer_SMS_TestCase(unittest.TestCase):
     
     def test_init_authorized(self):
