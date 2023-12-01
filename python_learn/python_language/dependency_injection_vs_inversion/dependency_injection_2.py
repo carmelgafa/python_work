@@ -15,7 +15,7 @@ class Authorizer(ABC):
     
     @abstractmethod
     def authorize(self):
-        '''pass'''
+        ...
     
     @abstractmethod
     def is_authorized(self) -> bool:
