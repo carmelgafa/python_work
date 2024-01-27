@@ -16,7 +16,7 @@ class OffState:
 
 class Bulb:
     def __init__(self) -> None:
-        self.state:LightState = OnState()
+        self.state:LightState|  = OnState()
         
     def switch(self) -> None:
         self.state.switch(self)
