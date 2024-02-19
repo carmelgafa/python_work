@@ -1,3 +1,4 @@
+'''script as in '''
 from typing import Protocol
 
 class LightState(Protocol):
@@ -16,16 +17,18 @@ class OffState:
 
 class Bulb:
     def __init__(self) -> None:
-        self.state:LightState|  = OnState()
+        self.state:LightState = OnState()
         
     def switch(self) -> None:
         self.state.switch(self)
         
 
 def main() -> None:
+    '''main method'''
     bulb = Bulb()
     bulb.switch()
     bulb.switch()
 
 if __name__ == "__main__":
     main()
+    
